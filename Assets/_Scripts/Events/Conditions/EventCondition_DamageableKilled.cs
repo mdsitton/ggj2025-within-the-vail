@@ -1,37 +1,37 @@
 using UnityEngine;
 
-public class EventCondition_DamageableKilled : EventCondition
+public class EventCondition_targetKilled : EventCondition
 {
-    public GameObject[] gameObjectsWithIDamageableScript;
-    protected IDamageable[] damageables;
+    public GameObject[] gameObjectsWithITargetScript;
+    protected ITarget[] targets;
 
     public override void Initialize(EventContainer container)
     {
-        if (gameObjectsWithIDamageableScript.Length < 1)
+        if (gameObjectsWithITargetScript.Length < 1)
         {
             Debug.LogWarning("No GameObjects are set in array!", this);
             Destroy(this);
         }
 
-        damageables = new IDamageable[gameObjectsWithIDamageableScript.Length];
-        for (int i=0; i<gameObjectsWithIDamageableScript.Length; i++)
+        targets = new ITarget[gameObjectsWithITargetScript.Length];
+        for (int i=0; i<gameObjectsWithITargetScript.Length; i++)
         {
-            IDamageable damageable = gameObjectsWithIDamageableScript[i].GetComponent<IDamageable>();
-            if (damageable != null)
+            ITarget target = gameObjectsWithITargetScript[i].GetComponent<ITarget>();
+            if (target != null)
             {
-                damageable.KillEvent.AddListener(Check);
-                damageable.ReviveEvent.AddListener(Check);
-                damageables[i] = damageable;
+                target.KillEvent.AddListener(Check);
+                target.ReviveEvent.AddListener(Check);
+                targets[i] = target;
             }
             else
-                Debug.LogWarning($"GameObject {gameObjectsWithIDamageableScript[i].name} does not contain an IDamageable!", this);
+                Debug.LogWarning($"GameObject {gameObjectsWithITargetScript[i].name} does not contain an ITarget!", this);
         }
     }
 
     protected void Check ()
     {
-        foreach (IDamageable damageable in damageables)
-            if (damageable != null && damageable.IsAlive)
+        foreach (ITarget target in targets)
+            if (target != null && target.IsAlive)
             {
                 Release();
                 return;
