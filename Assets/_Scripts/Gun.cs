@@ -37,6 +37,8 @@ public class Gun : MonoBehaviour
     public float casingEjectionForce = 1f;
     [Min(0.1f)]
     public float bulletImpactForce = 3f;
+    [Min(1)]
+    public int damage = 10;
 
     [Header("Modes")]
     public bool auto = false;
@@ -143,24 +145,27 @@ public class Gun : MonoBehaviour
             shootSFX.Play();
 
         // Casing FX
-
         if (casingPrefab != null && casingPoint != null)
         {
             if (Instantiate(casingPrefab, casingPoint.position, casingPoint.rotation).TryGetComponent<Rigidbody>(out var casingRB))
                 casingRB.AddForce(casingPoint.right * casingEjectionForce);
         }
 
+        // Raycast Logic
         RaycastHit hit;
         UnityEngine.Debug.DrawRay(firePoint.position, firePoint.forward * 10, Color.red, 0.1f);
-        // Fire
         if (Physics.Raycast(firePoint.position, firePoint.forward, out hit, 300, enemyLayerMask))
         {
             // Hit Enemy FX
             if (hitEnemyVFX != null)
                 Instantiate(hitEnemyVFX, hit.point, Quaternion.LookRotation(hit.normal));
 
+            Debug.Log("Hit Enemy");
             // Hit Enemy Logic
-            //TODO
+            hit.collider.GetComponentInParent<IDamageable>()?.Hit(damage);
+
+            if (hit.collider.attachedRigidbody != null)
+                hit.collider.attachedRigidbody.AddForce(-hit.normal * bulletImpactForce);
         }
         else if (Physics.Raycast(firePoint.position, firePoint.forward, out hit, 300, wallLayerMask))
         {
@@ -168,12 +173,8 @@ public class Gun : MonoBehaviour
             if (hitWallVFX != null)
                 Instantiate(hitWallVFX, hit.point, Quaternion.LookRotation(hit.normal));
 
-            Debug.Log("Hit Wall");
             if (hit.collider.TryGetComponent<Rigidbody>(out Rigidbody other))
-            {
-                Debug.Log("Applying Force");
                 other.AddForce(-hit.normal * bulletImpactForce);
-            }
 
         }
 
