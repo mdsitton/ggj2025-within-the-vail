@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+[RequireComponent(typeof(Rigidbody))]
 public class Gun : MonoBehaviour
 {
     #region Properties
@@ -11,7 +12,13 @@ public class Gun : MonoBehaviour
     public GameObject hitWallVFX;
     public GameObject muzzleFlashVFX;
     public AudioSource shootSFX;
+    public AudioSource dryFireSFX;
+    public AudioSource cockSFX;
     public Transform firePoint;
+    public GameObject casingPrefab;
+    public GameObject clipPrefab;
+    public Transform casingPoint; // Casing ejection spawn
+    public Transform clipPoint; // Clip ejection spawn
 
     public LayerMask enemyLayerMask;
     public LayerMask wallLayerMask;
@@ -26,6 +33,8 @@ public class Gun : MonoBehaviour
     public float fireDelay = 0.2f;
     [Min(0.1f)]
     public float reloadDelay = 2f;
+    [Min(0.1f)]
+    public float casingEjectionForce = 1f;
 
     [Header("Modes")]
     public bool auto = false;
@@ -35,14 +44,16 @@ public class Gun : MonoBehaviour
     private bool reloading = false; // Is currently reloading?
     private float nextFire = -1; // Next Time.time available to fire.
     private bool triggerHeld = false; // Is trigger still held since last fire?
+
+    private Rigidbody rb;
     #endregion
 
     void Start()
     {
         // Initialize here if needed
-        EndReload();
-
         useAction.action.started += Reload;
+
+        rb = GetComponent<Rigidbody>();
     }
 
     void Update()
@@ -82,6 +93,10 @@ public class Gun : MonoBehaviour
             if (reloadProgressBar != null)
                 reloadProgressBar.fillAmount = 0;
         }
+
+        if (clipPrefab != null && clipPoint != null)
+            if(Instantiate(clipPrefab, clipPoint.position, clipPoint.rotation).TryGetComponent<Rigidbody>(out var clipRB))
+                clipRB.velocity = rb.velocity;
     }
 
     public void EndReload()
@@ -92,9 +107,9 @@ public class Gun : MonoBehaviour
         currAmmo = maxAmmo;
 
         if (reloadCanvas != null)
-        {
             reloadCanvas.SetActive(false);
-        }
+        if (cockSFX != null)
+            cockSFX.Play();
     }
 
     public void TriggerDown ()
@@ -104,6 +119,8 @@ public class Gun : MonoBehaviour
             Fire();
             triggerHeld = true;
         }
+        else if (JustOutOfAmmo())
+            dryFireSFX.Play();
     }
 
     public void TriggerUp()
@@ -122,6 +139,14 @@ public class Gun : MonoBehaviour
             Instantiate (muzzleFlashVFX, firePoint.position, firePoint.rotation);
         if (shootSFX != null)
             shootSFX.Play();
+
+        // Casing FX
+
+        if (casingPrefab != null && casingPoint != null)
+        {
+            if (Instantiate(casingPrefab, casingPoint.position, casingPoint.rotation).TryGetComponent<Rigidbody>(out var casingRB))
+                casingRB.AddForce(casingPoint.right * casingEjectionForce);
+        }
 
         RaycastHit hit;
         UnityEngine.Debug.DrawRay(firePoint.position, firePoint.forward * 10, Color.red, 0.1f);
@@ -147,6 +172,11 @@ public class Gun : MonoBehaviour
     public bool CanFire ()
     {
         return Time.time >= nextFire && currAmmo > 0 && safety == false && reloading == false;
+    }
+
+    public bool JustOutOfAmmo ()
+    {
+        return Time.time >= nextFire && currAmmo <= 0 && safety == false && reloading == false;
     }
 
     public void SetAutoMode (bool auto)
