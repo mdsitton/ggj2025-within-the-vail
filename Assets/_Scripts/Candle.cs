@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-public class Candle : MonoBehaviour, IDamageable
+public class Candle : MonoBehaviour, ITarget
 {
     #region Properties
     public GameObject flame;
@@ -56,7 +56,7 @@ public class Candle : MonoBehaviour, IDamageable
     }
     #endregion
 
-    #region IDamageable Implementation
+    #region ITarget Implementation
     public UnityEvent onHit;
     public UnityEvent onKill;
     public UnityEvent onRevive;
@@ -72,8 +72,9 @@ public class Candle : MonoBehaviour, IDamageable
             Extinguish();
     }
 
-    public UnityEvent HitEvent { get => onHit; }
-    public UnityEvent KillEvent { get => onKill; }
-    public UnityEvent ReviveEvent { get => onRevive; }
-    #endregion
+    UnityEvent ITarget.HitEvent => onHit;
+    UnityEvent ITarget.KillEvent => onKill;
+    UnityEvent ITarget.ReviveEvent => onRevive;
+
+#endregion
 }
