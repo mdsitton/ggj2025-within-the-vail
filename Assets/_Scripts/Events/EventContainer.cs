@@ -1,68 +1,116 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
+/// <summary>
+/// Nomenclature guide:
+/// <br>Conditions are CHECKED, which results in them being COMPLETED on a pass, or RELEASED on a fail.</br>
+/// <br>Actions are EXECUTED. No undos. But may be executed multiple times depending on settings.</br>
+/// </summary>
 public class EventContainer : MonoBehaviour
 {
     public List <EventCondition> conditions = new List <EventCondition> ();
     public List <EventAction> actions = new List <EventAction> ();
 
-    [Tooltip("Time between condition checks. Set to -1 to disable.")]
-    public float checkDelay = 0.2f;
-
     public bool executeOnlyOnce = true;
 
-    private float nextCheck = -1;
-    private bool isExecuted = false;
+    private bool isCompleted = false;
     private bool hasExecuted = false;
 
-    public void OnEnable()
-    {
-        nextCheck = Time.time + 0.2f;
-    }
+    public UnityEvent onComplete;
+    public UnityEvent onRelease;
 
-    public void Update()
+    public void Start()
     {
-        if (checkDelay > 0 && Time.time >= nextCheck)
+        foreach (EventCondition condition in conditions)
         {
-            if (CheckConditions())
-                ExecuteActions();
-            else
-                isExecuted = false;
+            condition.onComplete.AddListener(CheckConditions);
+            condition.onRelease.AddListener(CheckConditions);
+
+            condition.Initialize(this);
         }
     }
 
-    public bool CheckConditions ()
+    public void CheckConditions ()
     {
-        nextCheck = Time.time + 0.2f;
-
         foreach (EventCondition condition in conditions)
             if (!condition.IsCompleted())
-                return false;
+            {
+                ReleaseActions ();
+                return;
+            }
 
-        return true;
+        ExecuteActions();
     }
 
     public bool IsCompleted ()
     {
-        return isExecuted;
+        return isCompleted || (hasExecuted && executeOnlyOnce);
     }
 
     public void ExecuteActions ()
     {
-        if ((hasExecuted && executeOnlyOnce) && !isExecuted)
+        if ((hasExecuted && executeOnlyOnce) || isCompleted)
             return;
 
-        isExecuted = true;
+        isCompleted = true;
         hasExecuted = true;
         foreach(EventAction action in actions)
             action.Execute ();
+
+        onComplete.Invoke();
+    }
+
+    public void ReleaseActions ()
+    {
+        if (!isCompleted || (isCompleted && executeOnlyOnce))
+            return;
+        isCompleted = false;
+        onRelease.Invoke ();
     }
 }
 
 [System.Serializable]
 public abstract class EventCondition : MonoBehaviour
 {
-    public abstract bool IsCompleted();
+    [Header("EventCondition")]
+
+    public bool latchComplete = true;
+    [Tooltip("Only applies when latchComplete is set to false.")]
+    public bool canRecomplete = true;
+
+    protected bool isCompleted = false;
+    private bool hasCompleted = false;
+
+    public UnityEvent onComplete;
+    public UnityEvent onRelease;
+
+    public virtual void Initialize (EventContainer container) {}
+
+    public virtual bool IsCompleted()
+    {
+        if ((hasCompleted && latchComplete) || isCompleted)
+            return true;
+        else
+            return false;
+    }
+
+    protected void Complete ()
+    {
+        if (isCompleted)
+            return;
+        isCompleted = true;
+        hasCompleted = true;
+        onComplete.Invoke ();
+    }
+
+    protected void Release ()
+    {
+        if (latchComplete || !isCompleted)
+            return;
+        isCompleted = false;
+        onRelease.Invoke();
+    }
 }
 
 [System.Serializable]

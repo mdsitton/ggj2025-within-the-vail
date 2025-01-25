@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Candle : MonoBehaviour, IDamageable
 {
@@ -44,25 +45,35 @@ public class Candle : MonoBehaviour, IDamageable
     {
         isLit = true;
         flame.SetActive(true);
+        onRevive.Invoke();
     }
 
     public void Extinguish ()
     {
         isLit = false;
         flame.SetActive(false);
+        onKill.Invoke();
     }
     #endregion
 
     #region IDamageable Implementation
+    public UnityEvent onHit;
+    public UnityEvent onKill;
+    public UnityEvent onRevive;
+
     public bool IsAlive { get => isLit; }
 
     public Vector3 GetPosition() { return transform.position; }
 
     public void Hit (int damage)
     {
-        Debug.Log("Candle was hit!");
+        onHit.Invoke();
         if (damage > 1)
             Extinguish();
     }
+
+    public UnityEvent HitEvent { get => onHit; }
+    public UnityEvent KillEvent { get => onKill; }
+    public UnityEvent ReviveEvent { get => onRevive; }
     #endregion
 }

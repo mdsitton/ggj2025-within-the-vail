@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Events;
 
 public interface IDamageable
 {
@@ -17,4 +18,9 @@ public interface IDamageable
     /// </summary>
     /// <param name="damage">Ammount of damager dealt by attack</param>
     public void Hit(int damage);
+
+    public UnityEvent HitEvent { get; }
+    public UnityEvent KillEvent { get; }
+    public UnityEvent ReviveEvent { get; }
+
 }

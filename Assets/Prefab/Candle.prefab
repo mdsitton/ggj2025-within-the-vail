@@ -480,9 +480,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   flame: {fileID: 4828306818022290740}
   lightSource: {fileID: 7200751688040516325}
-  flickerPercent: 0.5
-  flickerSpeed: 1
+  flickerPercent: 0.7
+  flickerSpeed: 2
   isLit: 1
+  onHit:
+    m_PersistentCalls:
+      m_Calls: []
+  onKill:
+    m_PersistentCalls:
+      m_Calls: []
+  onRevive:
+    m_PersistentCalls:
+      m_Calls: []
 --- !u!54 &2075262172057455303
 Rigidbody:
   m_ObjectHideFlags: 0

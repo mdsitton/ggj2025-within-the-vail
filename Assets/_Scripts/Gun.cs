@@ -156,16 +156,16 @@ public class Gun : MonoBehaviour
         UnityEngine.Debug.DrawRay(firePoint.position, firePoint.forward * 10, Color.red, 0.1f);
         if (Physics.Raycast(firePoint.position, firePoint.forward, out hit, 300, enemyLayerMask))
         {
-            // Hit Enemy FX
+            // Hit Enemy Splatter FX
             if (hitEnemyVFX != null)
                 Instantiate(hitEnemyVFX, hit.point, Quaternion.LookRotation(hit.normal));
 
-            Debug.Log("Hit Enemy");
-            // Hit Enemy Logic
-            hit.collider.GetComponentInParent<IDamageable>()?.Hit(damage);
-
+            // Hit Enemy Push Back
             if (hit.collider.attachedRigidbody != null)
                 hit.collider.attachedRigidbody.AddForce(-hit.normal * bulletImpactForce);
+
+            // Hit Enemy Logic
+            hit.collider.GetComponentInParent<IDamageable>()?.Hit(damage);
         }
         else if (Physics.Raycast(firePoint.position, firePoint.forward, out hit, 300, wallLayerMask))
         {
@@ -173,6 +173,7 @@ public class Gun : MonoBehaviour
             if (hitWallVFX != null)
                 Instantiate(hitWallVFX, hit.point, Quaternion.LookRotation(hit.normal));
 
+            // Hit Wall Push Back
             if (hit.collider.TryGetComponent<Rigidbody>(out Rigidbody other))
                 other.AddForce(-hit.normal * bulletImpactForce);
 
