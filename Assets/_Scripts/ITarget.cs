@@ -11,6 +11,8 @@ public interface ITarget
     /// </summary>
     bool IsAlive => true;
 
+    TargetType TargetType => TargetType.Generic;
+
     /// <summary>
     /// Gets the current position of the creature.
     /// </summary>
