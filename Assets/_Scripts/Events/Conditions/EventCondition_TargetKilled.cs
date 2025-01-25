@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class EventCondition_targetKilled : EventCondition
+public class EventCondition_TargetKilled : EventCondition
 {
     public GameObject[] gameObjectsWithITargetScript;
     protected ITarget[] targets;
