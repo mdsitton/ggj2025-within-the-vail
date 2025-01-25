@@ -165,7 +165,7 @@ public class Gun : MonoBehaviour
                 hit.collider.attachedRigidbody.AddForce(-hit.normal * bulletImpactForce);
 
             // Hit Enemy Logic
-            hit.collider.GetComponentInParent<IDamageable>()?.Hit(damage);
+            hit.collider.GetComponentInParent<ITarget>()?.Hit(damage);
         }
         else if (Physics.Raycast(firePoint.position, firePoint.forward, out hit, 300, wallLayerMask))
         {
