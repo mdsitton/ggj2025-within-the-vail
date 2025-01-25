@@ -35,6 +35,8 @@ public class Gun : MonoBehaviour
     public float reloadDelay = 2f;
     [Min(0.1f)]
     public float casingEjectionForce = 1f;
+    [Min(0.1f)]
+    public float bulletImpactForce = 3f;
 
     [Header("Modes")]
     public bool auto = false;
@@ -165,6 +167,14 @@ public class Gun : MonoBehaviour
             // Hit Wall FX
             if (hitWallVFX != null)
                 Instantiate(hitWallVFX, hit.point, Quaternion.LookRotation(hit.normal));
+
+            Debug.Log("Hit Wall");
+            if (hit.collider.TryGetComponent<Rigidbody>(out Rigidbody other))
+            {
+                Debug.Log("Applying Force");
+                other.AddForce(-hit.normal * bulletImpactForce);
+            }
+
         }
 
     }
