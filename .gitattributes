@@ -22,5 +22,5 @@ LightingData.asset -text
 *.mp3 filter=lfs diff=lfs merge=lfs -text
 *.wav filter=lfs diff=lfs merge=lfs -text
 *.ogg filter=lfs diff=lfs merge=lfs -text
-*.asset filter=lfs diff=lfs merge=lfs -text
+*.asset filter=lfs diff=lfs merge=lfs eol=lf
 *.png,*.tif,*.fbx,*.tga,*.tiff,*.gif,*.psd,*.exr,*.glb,*.bmp*.jpg,*.mp3,*.wav,*.ogg,*.asset filter=lfs diff=lfs merge=lfs -text
