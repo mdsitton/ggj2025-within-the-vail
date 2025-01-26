@@ -27,14 +27,15 @@ public class PlayerBodyFollower : MonoBehaviour
         {
             Vector3 newPos = headTransform.position + (headTransform.right * offset.x) + (headTransform.forward * offset.z);
             //newPos.y = (headTransform.parent.position.y + offset.y);
-            newPos.y = headTransform.parent.position.y + (headTransform.localPosition.y * heightPercent);
+            newPos.y = headTransform.parent.parent.position.y + (headTransform.localPosition.y * heightPercent);
 
             Quaternion newRot = Quaternion.Euler(0, headTransform.rotation.eulerAngles.y, 0); // Flatters the cameras rotation
-            if (Mathf.Abs(newRot.eulerAngles.y - transform.rotation.eulerAngles.y) > angleMax) // If within angle limit, don't change followers rotation
-                newRot = transform.rotation;
 
-            // Animate
-            newRot = Quaternion.Lerp(transform.rotation, newRot, Time.deltaTime*10);
+            //TODO: Improve body tracking
+            /* 
+            if (Mathf.Abs(newRot.eulerAngles.y - transform.rotation.eulerAngles.y) > angleMax)
+                newRot = transform.rotation;
+            */
 
             transform.SetPositionAndRotation(newPos, newRot);
         }
