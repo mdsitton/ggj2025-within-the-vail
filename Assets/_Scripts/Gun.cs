@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.XR.Interaction.Toolkit;
 
 [RequireComponent(typeof(Rigidbody))]
 public class Gun : MonoBehaviour
@@ -51,7 +52,7 @@ public class Gun : MonoBehaviour
 
     private Rigidbody rb;
     #endregion
-
+    
     void Start()
     {
         // Initialize here if needed
@@ -165,7 +166,7 @@ public class Gun : MonoBehaviour
                 hit.collider.attachedRigidbody.AddForce(-hit.normal * bulletImpactForce);
 
             // Hit Enemy Logic
-            hit.collider.GetComponentInParent<ITarget>()?.Hit(damage);
+            hit.collider.GetComponentInParent<ITarget>()?.Hit(damage, PlayerManager.instance);   
         }
         else if (Physics.Raycast(firePoint.position, firePoint.forward, out hit, 300, wallLayerMask))
         {
@@ -176,7 +177,6 @@ public class Gun : MonoBehaviour
             // Hit Wall Push Back
             if (hit.collider.TryGetComponent<Rigidbody>(out Rigidbody other))
                 other.AddForce(-hit.normal * bulletImpactForce);
-
         }
 
     }

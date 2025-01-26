@@ -65,7 +65,7 @@ public class EnemyController : MonoBehaviour, IAiStateMachine, ITarget
                 
             if (hit.collider != player)
             {
-                Debug.Log("Player is not in line of sight", gameObject);
+                Debug.Log($"Player is not in line of sight {hit.collider}", gameObject);
                 return null;
             }
             
@@ -101,17 +101,30 @@ public class EnemyController : MonoBehaviour, IAiStateMachine, ITarget
             return AiPhase.Patrol.AsState(0.5f / reactionSpeed);
         }
         agent.destination = currentTarget.GetPosition();
+        if (canAttack)
+        {
+            return AiPhase.Attack.AsState(0.25f / reactionSpeed);
+        }
         return AiPhase.Chase.AsState(0.25f / reactionSpeed);
     }
 
+    private bool canAttack => Vector3.Distance(transform.position, currentTarget.GetPosition()) <= attackRange;
+
     public AiState OnAttackState(AiState previousState)
     {
-        if (Vector3.Distance(transform.position, currentTarget.GetPosition()) <= attackRange)
+        if (!canAttack)
         {
-            currentTarget.Hit(attackDamage);
+            return AiPhase.Chase.AsState(0.25f / reactionSpeed);
+        }
+
+        currentTarget.Hit(attackDamage, this);
+        if (currentTarget.IsAlive)
+        {
             return AiPhase.Attack.AsState(attackCooldown);
         }
-        return AiPhase.Chase.AsState(0.25f / reactionSpeed);
+
+        currentTarget = null;
+        return AiPhase.Patrol.AsState(0.5f / reactionSpeed);
     }
 
     public AiState OnDeadState(AiState previousState)
@@ -126,8 +139,13 @@ public class EnemyController : MonoBehaviour, IAiStateMachine, ITarget
     TargetType ITarget.TargetType => TargetType.Enemy;
     Vector3 ITarget.GetPosition() => transform.position;
 
-    public void Hit(int damage)
+    public void Hit(int damage, ITarget attacker = null)
     {
+        if (attacker != null && attacker.TargetType == TargetType.Player)
+        {
+            currentTarget = attacker;
+        }
+        
         if (damage > health)
         {
             health = 0;

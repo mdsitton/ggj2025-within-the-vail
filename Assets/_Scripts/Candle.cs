@@ -65,8 +65,9 @@ public class Candle : MonoBehaviour, ITarget
 
     public Vector3 GetPosition() { return transform.position; }
 
-    public void Hit (int damage)
+    public void Hit (int damage, ITarget attacker = null)   
     {
+        Debug.Log(attacker);
         onHit.Invoke();
         if (damage > 1)
             Extinguish();

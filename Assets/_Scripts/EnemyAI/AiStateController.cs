@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;
 
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 [RequireComponent(typeof(IAiStateMachine))]
 public class AiStateController : MonoBehaviour
 {
@@ -21,7 +25,7 @@ public class AiStateController : MonoBehaviour
         stateMachine.AiController = this;
         
         // ensure slots for all states exists
-        foreach (var @enum in Enum.GetValues(typeof(AiState)))
+        foreach (var @enum in Enum.GetValues(typeof(AiPhase)))
         {
             phaseBehaviours.Add(new List<AiPhaseBehaviour>());
         }
@@ -64,6 +68,18 @@ public class AiStateController : MonoBehaviour
             behaviour.OnStateEnable();
         }
     }
+    
+#if UNITY_EDITOR
+    private void OnDrawGizmos()
+    {
+        GUIStyle style = new GUIStyle();
+        style.normal.textColor = Color.green;
+        style.fontSize = 32;
+        style.fontStyle = FontStyle.Bold;
+        style.alignment = TextAnchor.MiddleCenter;
+        Handles.Label(transform.position + (-transform.up * 0.3f), $"{currentState.phase} {currentState.nextCheckTime-Time.timeSinceLevelLoad:0.00}", style);
+    }
+#endif
     
     // TODO - Maybe implement a debug gizmo to show the current state of the AI in the scene view
 
