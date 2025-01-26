@@ -1,13 +1,8 @@
 using UnityEngine;
 
-public class EventCondition_PlayerEntersCollider : MonoBehaviour
+public class EventCondition_PlayerEntersCollider : EventCondition
 {
-    void Start()
-    {
-        
-    }
-
-    void Update()
+    public override void Initialize(EventContainer container)
     {
         
     }
