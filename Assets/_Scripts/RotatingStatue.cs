@@ -30,7 +30,7 @@ public class RotatingStatue : MonoBehaviour
     
     public void OnStatueMoved ()
     {
-        Debug.Log((Mathf.Abs(StatueAngle - targetRotation) <= leniance ? "Pass" : "Fail") + "\nAngle: " + Mathf.Abs(StatueAngle - targetRotation));
+        //Debug.Log((Mathf.Abs(StatueAngle - targetRotation) <= leniance ? "Pass" : "Fail") + "\nAngle: " + Mathf.Abs(StatueAngle - targetRotation));
 
         if (Mathf.Abs(StatueAngle - targetRotation) <= leniance)
         {

@@ -2,13 +2,23 @@ using UnityEngine;
 
 public class EventCondition_PlayerEntersCollider : EventCondition
 {
-    public override void Initialize(EventContainer container)
-    {
-        
-    }
+    protected bool isInside = false;
 
     public void OnTriggerEnter(Collider other)
     {
-        
+        if (other.CompareTag("Player") && !isInside)
+        {
+            isInside = true;
+            Complete();
+        }
+    }
+
+    public void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("Player") && !isInside)
+        {
+            isInside = false;
+            Release();
+        }
     }
 }

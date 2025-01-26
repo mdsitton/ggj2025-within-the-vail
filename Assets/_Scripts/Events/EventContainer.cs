@@ -40,6 +40,8 @@ public class EventContainer : MonoBehaviour
                 return;
             }
 
+        Debug.Log("All conditions passed!");
+
         ExecuteActions();
     }
 
