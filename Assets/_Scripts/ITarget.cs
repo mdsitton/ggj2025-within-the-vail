@@ -22,7 +22,8 @@ public interface ITarget
     /// Called by the attacker, through colliders.
     /// </summary>
     /// <param name="damage">Amount of HP dealt by attack</param>
-    void Hit(int damage);
+    /// <param name="attacker">Optional target of what is hitting</param>
+    void Hit(int damage, ITarget attacker = null);
 
     UnityEvent HitEvent { get; }
     
