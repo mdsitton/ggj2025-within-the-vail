@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 2555307331990818245}
   - component: {fileID: 5510794895216391340}
   - component: {fileID: 7979367732659027226}
+  - component: {fileID: 7495017064788802248}
   m_Layer: 0
   m_Name: GateKey - Circles
   m_TagString: Untagged
@@ -62,7 +63,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!114 &5510794895216391340
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -199,6 +200,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Keys:
   - {fileID: 11400000, guid: a5e022766baff6d449e98f146f70ba3f, type: 2}
+--- !u!114 &7495017064788802248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 879218577427134175}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 404cf44a8f516ba4a9bd15387c5514b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 0}
+  thresholdY: 20
+  distanceInFrontOfPlayer: 0.5
+  rb: {fileID: 2555307331990818245}
 --- !u!1 &4289928395296337196
 GameObject:
   m_ObjectHideFlags: 0

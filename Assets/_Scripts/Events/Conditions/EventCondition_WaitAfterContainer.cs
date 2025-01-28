@@ -18,9 +18,16 @@ public class EventCondition_WaitAfterContainer : EventCondition
 
     public override void Initialize(EventContainer container)
     {
-        containerToWatch.onComplete.AddListener(StartDelayCoroutine);
-        containerBlocker.onComplete.AddListener(BlockCompletion);
-        containerBlocker.onRelease.AddListener(UnblockCompletion);
+        if (containerToWatch != null)
+            containerToWatch.onComplete.AddListener(StartDelayCoroutine);
+        else
+            Debug.LogWarning("WARNING: No container to watch set on condition!\n" + this);
+
+        if (containerBlocker != null)
+        {
+            containerBlocker.onComplete.AddListener(BlockCompletion);
+            containerBlocker.onRelease.AddListener(UnblockCompletion);
+        }
     }
 
     private void StartDelayCoroutine()

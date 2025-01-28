@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 3174543061655574154}
   - component: {fileID: 7435747876160740763}
   - component: {fileID: 5822622982421585237}
+  - component: {fileID: 8750786621762739853}
   m_Layer: 0
   m_Name: GateKey - Eyes
   m_TagString: Untagged
@@ -62,7 +63,7 @@ Rigidbody:
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
 --- !u!114 &7435747876160740763
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -199,6 +200,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Keys:
   - {fileID: 11400000, guid: 991824d1136d31a4aa32100d07454e51, type: 2}
+--- !u!114 &8750786621762739853
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2223015438205605055}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 404cf44a8f516ba4a9bd15387c5514b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  player: {fileID: 0}
+  thresholdY: 20
+  distanceInFrontOfPlayer: 0.5
+  rb: {fileID: 3174543061655574154}
 --- !u!1 &3402306121989597916
 GameObject:
   m_ObjectHideFlags: 0

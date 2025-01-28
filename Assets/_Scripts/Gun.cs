@@ -1,6 +1,6 @@
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
-using UnityEngine.XR.Interaction.Toolkit;
 
 [RequireComponent(typeof(Rigidbody))]
 public class Gun : MonoBehaviour
@@ -14,6 +14,7 @@ public class Gun : MonoBehaviour
     public GameObject muzzleFlashVFX;
     public AudioSource shootSFX;
     public AudioSource dryFireSFX;
+    public AudioSource clipEjectSFX;
     public AudioSource cockSFX;
     public Transform firePoint;
     public GameObject casingPrefab;
@@ -44,6 +45,14 @@ public class Gun : MonoBehaviour
     [Header("Modes")]
     public bool auto = false;
     public bool safety = false;
+
+    [HideInInspector]
+    public UnityEvent onFire;
+    public UnityEvent onHitWall;
+    public UnityEvent onHitEnemy;
+    public UnityEvent onDryFire;
+    public UnityEvent onReload;
+    public UnityEvent onEndReload;
 
     private float reloadStarted = -1; // Time.time that reload started.
     private bool reloading = false; // Is currently reloading?
@@ -99,9 +108,17 @@ public class Gun : MonoBehaviour
                 reloadProgressBar.fillAmount = 0;
         }
 
+        if (clipEjectSFX != null)
+            clipEjectSFX.Play();
+
         if (clipPrefab != null && clipPoint != null)
-            if(Instantiate(clipPrefab, clipPoint.position, clipPoint.rotation).TryGetComponent<Rigidbody>(out var clipRB))
-                clipRB.velocity = rb.velocity;
+            if (Instantiate(clipPrefab, clipPoint.position, clipPoint.rotation).TryGetComponent<Rigidbody>(out var clipRB))
+            {
+                Debug.Log(rb.velocity);
+                clipRB.velocity = rb.velocity*10;
+            }
+
+        onReload.Invoke();
     }
 
     public void EndReload()
@@ -115,6 +132,8 @@ public class Gun : MonoBehaviour
             reloadCanvas.SetActive(false);
         if (cockSFX != null)
             cockSFX.Play();
+
+        onEndReload.Invoke();
     }
 
     public void TriggerDown ()
@@ -125,7 +144,10 @@ public class Gun : MonoBehaviour
             triggerHeld = true;
         }
         else if (JustOutOfAmmo())
+        {
             dryFireSFX.Play();
+            onDryFire.Invoke();
+        }
     }
 
     public void TriggerUp()
@@ -166,7 +188,9 @@ public class Gun : MonoBehaviour
                 hit.collider.attachedRigidbody.AddForce(-hit.normal * bulletImpactForce);
 
             // Hit Enemy Logic
-            hit.collider.GetComponentInParent<ITarget>()?.Hit(damage, PlayerManager.instance);   
+            hit.collider.GetComponentInParent<ITarget>()?.Hit(damage, PlayerManager.instance);
+
+            onHitEnemy.Invoke();
         }
         else if (Physics.Raycast(firePoint.position, firePoint.forward, out hit, 300, wallLayerMask))
         {
@@ -177,8 +201,11 @@ public class Gun : MonoBehaviour
             // Hit Wall Push Back
             if (hit.collider.TryGetComponent<Rigidbody>(out Rigidbody other))
                 other.AddForce(-hit.normal * bulletImpactForce);
+
+            onHitWall.Invoke();
         }
 
+        onFire.Invoke();
     }
 
     public bool CanFire ()
