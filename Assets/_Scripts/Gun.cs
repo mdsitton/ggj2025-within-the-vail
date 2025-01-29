@@ -177,7 +177,7 @@ public class Gun : MonoBehaviour
         // Raycast Logic
         RaycastHit hit;
         UnityEngine.Debug.DrawRay(firePoint.position, firePoint.forward * 10, Color.red, 0.1f);
-        if (Physics.Raycast(firePoint.position, firePoint.forward, out hit, 300, enemyLayerMask))
+        if (Physics.Raycast(firePoint.position, firePoint.forward, out hit, 70, enemyLayerMask))
         {
             // Hit Enemy Splatter FX
             if (hitEnemyVFX != null)
@@ -192,15 +192,15 @@ public class Gun : MonoBehaviour
 
             onHitEnemy.Invoke();
         }
-        else if (Physics.Raycast(firePoint.position, firePoint.forward, out hit, 300, wallLayerMask))
+        else if (Physics.Raycast(firePoint.position, firePoint.forward, out hit, 70, wallLayerMask))
         {
             // Hit Wall FX
             if (hitWallVFX != null)
                 Instantiate(hitWallVFX, hit.point, Quaternion.LookRotation(hit.normal));
 
             // Hit Wall Push Back
-            if (hit.collider.TryGetComponent<Rigidbody>(out Rigidbody other))
-                other.AddForce(-hit.normal * bulletImpactForce);
+            if (hit.collider.attachedRigidbody != null)
+                hit.collider.attachedRigidbody.AddForce(-hit.normal * bulletImpactForce);
 
             onHitWall.Invoke();
         }
