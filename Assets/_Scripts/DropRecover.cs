@@ -13,8 +13,13 @@ public class DropRecover : MonoBehaviour
 
         if (player == null)
         {
-            Debug.LogWarning("DropRecover: No player set.\nDestroying script.");
-            Destroy(this);
+            if (PlayerManager.instance == null)
+            {
+                Debug.LogWarning("DropRecover: No player set or found.\nDestroying script.");
+                Destroy(this);
+            }
+            else
+                player = PlayerManager.instance.gameObject;
         }
     }
 

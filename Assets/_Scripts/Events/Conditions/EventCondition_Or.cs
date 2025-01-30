@@ -2,7 +2,7 @@ public class EventCondition_Or : EventCondition
 {
     public EventCondition[] conditions;
 
-    public override void Initialize(EventContainer container)
+    public override void Initialize()
     {
         foreach (EventCondition condition in conditions)
         {

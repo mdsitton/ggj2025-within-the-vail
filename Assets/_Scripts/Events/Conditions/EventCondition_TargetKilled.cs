@@ -5,11 +5,11 @@ public class EventCondition_TargetKilled : EventCondition
     public GameObject[] gameObjectsWithITargetScript;
     protected ITarget[] targets;
 
-    public override void Initialize(EventContainer container)
+    public override void Initialize()
     {
         if (gameObjectsWithITargetScript.Length < 1)
         {
-            Debug.LogWarning("No GameObjects are set in array!", this);
+            Debug.LogWarning("No GameObjects are set in array on EventCondition_TargetKilled!", this);
             Destroy(this);
         }
 

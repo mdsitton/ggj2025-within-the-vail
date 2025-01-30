@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
-using Unity.XR.Oculus;
 
 public class FoveationControl : MonoBehaviour
 {

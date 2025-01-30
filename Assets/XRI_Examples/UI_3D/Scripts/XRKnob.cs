@@ -117,6 +117,9 @@ namespace UnityEngine.XR.Content.Interaction
         float m_TwistSensitivity = 1.5f;
 
         [SerializeField]
+        bool invertInput = false;
+
+        [SerializeField]
         [Tooltip("Events to trigger when the knob is rotated")]
         ValueChangeEvent m_OnValueChange = new ValueChangeEvent();
 
@@ -318,7 +321,7 @@ namespace UnityEngine.XR.Content.Interaction
                 m_ForwardVectorAngles.SetTargetFromVector(localForward);
 
             // Apply offset to base knob rotation to get new knob rotation
-            var knobRotation = m_BaseKnobRotation - ((m_UpVectorAngles.totalOffset + m_ForwardVectorAngles.totalOffset) * m_TwistSensitivity) - m_PositionAngles.totalOffset;
+            var knobRotation = m_BaseKnobRotation + ((m_UpVectorAngles.totalOffset + m_ForwardVectorAngles.totalOffset) * m_TwistSensitivity * (invertInput ? 1 : -1)) - m_PositionAngles.totalOffset;
 
             // Clamp to range
             if (m_ClampedMotion)

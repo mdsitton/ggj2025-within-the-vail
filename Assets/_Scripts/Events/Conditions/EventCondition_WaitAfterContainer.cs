@@ -16,7 +16,7 @@ public class EventCondition_WaitAfterContainer : EventCondition
 
     private bool isBlocked = false;
 
-    public override void Initialize(EventContainer container)
+    public override void Initialize()
     {
         if (containerToWatch != null)
             containerToWatch.onComplete.AddListener(StartDelayCoroutine);

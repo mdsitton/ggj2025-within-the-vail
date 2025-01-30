@@ -26,8 +26,6 @@ public class EventContainer : MonoBehaviour
         {
             condition.onComplete.AddListener(CheckConditions);
             condition.onRelease.AddListener(CheckConditions);
-
-            condition.Initialize(this);
         }
     }
 
@@ -85,7 +83,9 @@ public abstract class EventCondition : MonoBehaviour
     public UnityEvent onComplete;
     public UnityEvent onRelease;
 
-    public virtual void Initialize (EventContainer container) {}
+    private void Start() {Initialize();}
+
+    public virtual void Initialize () {}
 
     public virtual bool IsCompleted()
     {

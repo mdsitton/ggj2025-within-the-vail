@@ -38,6 +38,17 @@ public class Candle : MonoBehaviour, ITarget
             lightSource.intensity = (intensity * (1-flickerPercent)) + (Mathf.PerlinNoise1D(seed + (Time.time * flickerSpeed)) * flickerPercent);
         }
     }
+
+    void OnTriggerEnter (Collider other)
+    {
+        if (other.isTrigger && other.TryGetComponent(out Candle otherCandle))
+        {
+            if (isLit && !otherCandle.isLit)
+            {
+                otherCandle.Light();
+            }
+        }
+    }
     #endregion
 
     #region Public Methods

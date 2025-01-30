@@ -1,6 +1,9 @@
+using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.Animations;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
+using UnityEngine.XR.Interaction.Toolkit.Interactables;
 
 [RequireComponent(typeof(Rigidbody))]
 public class Gun : MonoBehaviour
@@ -9,6 +12,7 @@ public class Gun : MonoBehaviour
     [Header("References")]
     public GameObject reloadCanvas;
     public UnityEngine.UI.Image reloadProgressBar;
+    public Animator animator;
     public GameObject hitEnemyVFX;
     public GameObject hitWallVFX;
     public GameObject muzzleFlashVFX;
@@ -17,6 +21,7 @@ public class Gun : MonoBehaviour
     public AudioSource clipEjectSFX;
     public AudioSource cockSFX;
     public Transform firePoint;
+    public GameObject clip;
     public GameObject casingPrefab;
     public GameObject clipPrefab;
     public Transform casingPoint; // Casing ejection spawn
@@ -59,7 +64,7 @@ public class Gun : MonoBehaviour
     private float nextFire = -1; // Next Time.time available to fire.
     private bool triggerHeld = false; // Is trigger still held since last fire?
 
-    private Rigidbody rb;
+    private XRGrabInteractable xrgi;
     #endregion
     
     void Start()
@@ -67,7 +72,8 @@ public class Gun : MonoBehaviour
         // Initialize here if needed
         useAction.action.started += Reload;
 
-        rb = GetComponent<Rigidbody>();
+        //rb = GetComponent<Rigidbody>();
+        
     }
 
     void Update()
@@ -108,15 +114,19 @@ public class Gun : MonoBehaviour
                 reloadProgressBar.fillAmount = 0;
         }
 
+        if (clip != null)
+            clip.SetActive(false);
+
         if (clipEjectSFX != null)
             clipEjectSFX.Play();
 
+        //* Grab mode is set to instantaneous - doesnt provide a velocity reference.
         if (clipPrefab != null && clipPoint != null)
             if (Instantiate(clipPrefab, clipPoint.position, clipPoint.rotation).TryGetComponent<Rigidbody>(out var clipRB))
             {
-                Debug.Log(rb.velocity);
-                clipRB.velocity = rb.velocity*10;
+                //clipRB.velocity = rb.velocity*10;
             }
+        //*/
 
         onReload.Invoke();
     }
@@ -127,6 +137,9 @@ public class Gun : MonoBehaviour
         reloading = false;
 
         currAmmo = maxAmmo;
+
+        if (clip != null)
+            clip.SetActive(true);
 
         if (reloadCanvas != null)
             reloadCanvas.SetActive(false);
@@ -167,6 +180,10 @@ public class Gun : MonoBehaviour
         if (shootSFX != null)
             shootSFX.Play();
 
+        // Fire Animation
+        if (animator != null)
+            animator.SetTrigger("Fire");
+
         // Casing FX
         if (casingPrefab != null && casingPoint != null)
         {
@@ -187,6 +204,10 @@ public class Gun : MonoBehaviour
             if (hit.collider.attachedRigidbody != null)
                 hit.collider.attachedRigidbody.AddForce(-hit.normal * bulletImpactForce);
 
+            // Hit Enemy SFX
+            if (TryGetComponent(out CollisionInteraction collisionInteraction))
+                collisionInteraction.Collide(damage);
+
             // Hit Enemy Logic
             hit.collider.GetComponentInParent<ITarget>()?.Hit(damage, PlayerManager.instance);
 
@@ -201,6 +222,10 @@ public class Gun : MonoBehaviour
             // Hit Wall Push Back
             if (hit.collider.attachedRigidbody != null)
                 hit.collider.attachedRigidbody.AddForce(-hit.normal * bulletImpactForce);
+
+            // Hit Wall SFX
+            if (TryGetComponent(out CollisionInteraction collisionInteraction))
+                collisionInteraction.Collide(damage);
 
             onHitWall.Invoke();
         }
